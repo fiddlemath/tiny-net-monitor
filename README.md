@@ -20,13 +20,13 @@ This isn't packaged or anything.
 
 ## Plan
 
-- [ ] Config reader / validate option
-  - [ ] Schema check
-  - [ ] Check against available networking ifaces.
-- [ ] General Logging (with datetimes, experiment data, sensible formatting)
-- [X] Parse commands where needed
-  - [ ] Test against tiny-box implementation!
+Gah. This is silly. Lighter, lighter.
 
-- [ ] (Not code) Test keeping this in sync with some location. Probably just configure rsync.
+- [ ] iface schema
+- [ ] Script: From list of wifi configurations (Yaml file?),
+  - get psk from wpa_passphrase
+  - keep psk 
+  - write out dedicated file in /etc/network/interfaces.
 
-- [ ] (Separate script) Read wireless config, update custom /etc/network/interfaces.d/ file.
+- [ ] Script: Cycle through config'd wifi interfaces, test each one, append to logfile.
+
