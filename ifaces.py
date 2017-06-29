@@ -8,11 +8,15 @@ import yaml
 from schema import Schema
 from plumbum import cli
 
-iface_schema = Schema ([{
-        'iface': str,
-        'ssid': str,
-        'pass': str
-    }])
+iface_schema = Schema ({
+    'ifaces': {
+        str: {
+            'ssid': str,
+            'pass': str
+        }
+    },
+    str: object
+})
 
 def read_ifaces(filename):
     """Read and validate the config file."""
@@ -21,12 +25,11 @@ def read_ifaces(filename):
     if config == None:
         raise Exception("No config at {}".format(filename))
 
-    return iface_schmea.validate(config)
+    return iface_schema.validate(config)['ifaces']
 
 from plumbum.cmd import wpa_passphrase
 def get_psk(ssid, password):
-    output = wpa_passphrase(ssid, password)
-    
+    output = wpa_passphrase(ssid, password)    
     for line in output.splitlines():
         line = line.strip()
         if line.startswith("psk="):
@@ -42,21 +45,22 @@ iface {} inet dhcp
 
 """.format(iface, ssid, psk)
 
-# def write_ifaces(ifaces, outfile='/etc/network/interfaces.d/'):
-
-#     for network in ifaces:
-#         definition = iface_definition(network['iface'],
-#                                       network['ssid'],
-#                                       network['psk'])
+def write_ifaces(ifaces, outfile):
+    with open(outfile, 'w') as f:
+        for key, val in ifaces:
+            f.write(iface_definition(key, val['ssid'], val['psk']))
         
-
 class IFacesCLI(cli.Application):
     testonly = cli.Flag(["t", "test"],
-                    help="Do not write the interfaces file; just validate.")
-    def main(self, filename="~/config/tiny-net-monitor"):
-        ifaces = read_ifaces(filename)
+                 help="Do not write the interfaces file; just validate.")
+    
+    def main(self,
+             infile="~/config/tiny-net-monitor",
+             outfile="/etc/network/interfaces.d/wifi_networks"):
+
+        ifaces = read_ifaces(infile)
         if not self.testonly:
-            write_ifaces(ifaces)
+            write_ifaces(ifaces, outfile)
 
 if __name__ == "__main__":
     IFacesCLI.run()
