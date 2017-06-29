@@ -51,13 +51,13 @@ def write_ifaces(ifaces, outfile):
             ssid, passwd = val['ssid'], val['pass']
             psk = get_psk(ssid, passwd)
             f.write(iface_definition(iface, ssid, psk))
-        
+
 class IFacesCLI(cli.Application):
-    testonly = cli.Flag(["t", "test"],
+    testonly = cli.Flag(["-t", "--test"],
                  help="Do not write the interfaces file; just validate.")
     
     def main(self,
-             infile="~/config/tiny-net-monitor",
+             infile="~/net-monitor/config.yaml",
              outfile="/etc/network/interfaces.d/wifi_networks"):
 
         ifaces = read_ifaces(infile)
