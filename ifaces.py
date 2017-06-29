@@ -38,8 +38,8 @@ def get_psk(ssid, password):
 def iface_definition(iface, ssid, psk):
     """Returns the corresponding iface definition as a string,
     formatted for inclusion in /etc/network/interfaces.d/"""
-    return """
-iface {} inet dhcp
+    return \
+"""iface {} inet dhcp
       wpa-ssid "{}"
       psk {}
 
@@ -47,8 +47,10 @@ iface {} inet dhcp
 
 def write_ifaces(ifaces, outfile):
     with open(outfile, 'w') as f:
-        for key, val in ifaces:
-            f.write(iface_definition(key, val['ssid'], val['psk']))
+        for iface, val in ifaces.iteritems():
+            ssid, passwd = val['ssid'], val['pass']
+            psk = get_psk(ssid, passwd)
+            f.write(iface_definition(iface, ssid, psk))
         
 class IFacesCLI(cli.Application):
     testonly = cli.Flag(["t", "test"],
