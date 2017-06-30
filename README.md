@@ -22,11 +22,11 @@ This isn't packaged or anything.
 
 Gah. This is silly. Lighter, lighter.
 
-- [ ] iface schema
-- [ ] Script: From list of wifi configurations (Yaml file?),
+- [X] iface schema
+- [X] Script: From list of wifi configurations (Yaml file?),
   - get psk from wpa_passphrase
   - keep psk 
   - write out dedicated file in /etc/network/interfaces.
 
 - [ ] Script: Cycle through config'd wifi interfaces, test each one, append to logfile.
-
+  - [ ] Add timeouts and error handling to network managment functions
