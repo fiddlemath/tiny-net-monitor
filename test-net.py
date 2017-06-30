@@ -3,7 +3,6 @@
 Test the speed and latency over time of some configured networks.
 """
 
-import yaml
 import config
 from plumbum import cli, local
 from os import path

@@ -1,10 +1,7 @@
 """ifaces.py
 
 Write the list of wifi networks and passwords to /etc/network/interfaces
-
--n: Don't write the list, just validate the configuration.
 """
-import yaml
 import config
 from schema import Schema
 from plumbum import cli
@@ -37,12 +34,14 @@ def write_ifaces(ifaces, outfile):
 class IFacesCLI(cli.Application):
     testonly = cli.Flag(["-t", "--test"],
                  help="Do not write the interfaces file; just validate.")
-    
-    def main(self,
-             infile="~/net-monitor/config.yaml",
-             outfile="/etc/network/interfaces.d/wifi_networks"):
 
-        ifaces = config.read(infile)['ifaces']
+    config_file = cli.SwitchAttr(['-c', '--config'],
+                            str,
+                            default="~/net-monitor/config.yaml")
+    
+    def main(self, outfile="/etc/network/interfaces.d/wifi_networks"):
+
+        ifaces = config.read(self.config_file)['ifaces']
         if not self.testonly:
             write_ifaces(ifaces, outfile)
 
