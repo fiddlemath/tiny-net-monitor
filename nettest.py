@@ -19,8 +19,8 @@ def use_network_interface(wifi_iface, network_iface):
     # Where's the DHCP server?
     stderr = ifup_outputs[2].splitlines()
     for line in stderr:
-        m = re.match(r'DHCPACK of (\d+\.\d+\.\d+\.\d+) from (\d+\.\d+\.\d+\.\d+)',
-                     line):
+        m = re.match(
+            r'DHCPACK of (\d+\.\d+\.\d+\.\d+) from (\d+\.\d+\.\d+\.\d+)', line)
         if m:
             router_ip = m.group(2)
             break
@@ -49,11 +49,11 @@ class TestNetCLI(cli.Application):
         '''Run network tests for each configured interface.
         Append results to files in outdir'''
 
-        config = config.read(self.config_file)
+        conf = config.read(self.config_file)
 
-        for iface in config['ifaces']:
-            use_network_interface(config['test']['wifi_iface'], iface)
-            run_tests(config['test'], path.join(outdir, iface+'.log'))
+        for iface in conf['ifaces']:
+            use_network_interface(conf['test']['wifi_iface'], iface)
+            run_tests(conf['test'], path.join(outdir, iface+'.log'))
 
 if __name__ == "__main__":
     TestNetCLI.run()
