@@ -5,27 +5,9 @@ Write the list of wifi networks and passwords to /etc/network/interfaces
 -n: Don't write the list, just validate the configuration.
 """
 import yaml
+import config
 from schema import Schema
 from plumbum import cli
-
-iface_schema = Schema ({
-    'ifaces': {
-        str: {
-            'ssid': str,
-            'pass': str
-        }
-    },
-    str: object
-})
-
-def read_ifaces(filename):
-    """Read and validate the config file."""
-    with open(filename) as f:
-        config = yaml.safe_load(f)
-    if config == None:
-        raise Exception("No config at {}".format(filename))
-
-    return iface_schema.validate(config)['ifaces']
 
 from plumbum.cmd import wpa_passphrase
 def get_psk(ssid, password):
@@ -41,7 +23,7 @@ def iface_definition(iface, ssid, psk):
     return \
 """iface {} inet dhcp
       wpa-ssid "{}"
-      psk {}
+      wpa-psk {}
 
 """.format(iface, ssid, psk)
 
@@ -60,7 +42,7 @@ class IFacesCLI(cli.Application):
              infile="~/net-monitor/config.yaml",
              outfile="/etc/network/interfaces.d/wifi_networks"):
 
-        ifaces = read_ifaces(infile)
+        ifaces = config.read(infile)['ifaces']
         if not self.testonly:
             write_ifaces(ifaces, outfile)
 

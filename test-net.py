@@ -4,38 +4,10 @@ Test the speed and latency over time of some configured networks.
 """
 
 import yaml
-from schema import Schema, And, Use, Regex, Optional
+import config
 from plumbum import cli, local
 from os import path
 import re
-
-schema = Schema ({
-    'ifaces': { str: {str: object} }
-    'test': {
-        'ifaces': [str], # Must match keys of ifaces.
-        'wifi_iface': str # The physical wifi network interface.
-        Optional('pings', default=20): And(Use(int), lambda n: n > 0),
-        Optional('ping_ip', default='8.8.8.8'): Regex(r'^\d+\.\d+\.\d+\.\d+$')
-    }
-    str: object
-})
-
-def read_config(filename):
-    """Read and validate the config file."""
-    with open(filename) as f:
-        config = yaml.safe_load(f)
-    if config == None:
-        raise Exception("No config at {}".format(filename))
-
-    config = iface_schema.validate(config)
-
-    # Extra check:
-    iface_list = config['ifaces'].keys()
-    for iface in config['test']['ifaces']:
-        if iface not in iface_list:
-            raise Exception("No iface configuration named {}".format(iface))
-
-    return config
 
 def use_network_interface(wifi_iface, network_iface):
     # Bring up the interface
@@ -78,7 +50,7 @@ class TestNetCLI(cli.Application):
         '''Run network tests for each configured interface.
         Append results to files in outdir'''
 
-        config = read_config(self.config_file)
+        config = config.read(self.config_file)
 
         for iface in config['ifaces']:
             use_network_interface(config['test']['wifi_iface'], iface)
